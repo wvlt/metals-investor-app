@@ -1,0 +1,744 @@
+:root {
+    --primary-bg-color: #333;
+    --primary-text-color: #fff;
+    --secondary-bg-color: #f4f4f4;
+    --tile-bg-color: #fff;
+    --tile-border-color: #ddd;
+    --highlight-bg-color: #f0f8ff; /* Light blue background */
+    --hover-bg-color: #555;
+    --font-family: Arial, sans-serif;
+    --border-radius: 8px;
+    --padding: 10px;
+    --padding-large: 20px;
+    --gap: 20px;
+    --input-border-color: #ccc;
+    --header-font-size: 20px;
+    --tile-font-size: 14px;
+    --wide-attribute-column-width: 200px;
+    --signal-bg-color: #e6f7ff; /* Light blue for investment signal */
+    --arrow-up-color: green;
+    --arrow-down-color: red;
+    --active-link-color: yellow;
+    --table-title-bg-color: #444; /* Background color for table titles */
+    --table-title-text-color: #fff; /* Text color for table titles */
+}
+
+body {
+    font-family: var(--font-family);
+    margin: 0;
+    padding: 0;
+    background-color: var(--secondary-bg-color);
+}
+
+header {
+    background-color: var(--primary-bg-color);
+    color: var(--primary-text-color);
+    padding: var(--padding);
+    text-align: center;
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+}
+
+nav ul li {
+    display: inline;
+    margin: 0 10px;
+}
+
+nav ul li a {
+    color: var(--primary-text-color);
+    text-decoration: none;
+}
+
+nav ul li a.active {
+    color: var(--active-link-color); /* Highlight active link in yellow */
+}
+
+main {
+    padding: var(--padding-large);
+}
+
+.tile {
+    background-color: var(--tile-bg-color);
+    border: 1px solid var(--tile-border-color);
+    padding: var(--padding-large);
+    margin-bottom: var(--padding-large);
+    border-radius: var(--border-radius);
+    height: 100%; /* Ensure the tiles take full height */
+    display: flex;
+    flex-direction: column;
+}
+
+.tile h2 {
+    background-color: var(--table-title-bg-color); /* Distinct background for table titles */
+    color: var(--table-title-text-color); /* Distinct text color for table titles */
+    padding: var(--padding);
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
+    margin: -var(--padding-large) -var(--padding-large) var(--padding) -var(--padding-large); /* Ensure the title fills the width of the tile */
+}
+
+.search-bar {
+    position: relative; /* Added for positioning the suggestions */
+    margin-bottom: var(--padding-large);
+}
+
+.search-bar input {
+    padding: var(--padding);
+    font-size: 16px;
+    width: calc(100% - 110px); /* Adjust the width to leave space for the button */
+    border: 1px solid var(--input-border-color);
+    border-radius: var(--border-radius);
+}
+
+.search-bar button {
+    padding: var(--padding);
+    font-size: 16px;
+    background-color: var(--primary-bg-color);
+    color: var(--primary-text-color);
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    margin-left: -5px; /* Negative margin to close the gap between the input and button */
+}
+
+.search-bar button:hover {
+    background-color: var(--hover-bg-color);
+}
+
+.company-info {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: var(--padding);
+    border-spacing: 0; /* Minimal lines between cells */
+    flex-grow: 1; /* Ensure the table grows to fill the tile */
+    height: 100%; /* Ensure the table takes full height */
+}
+
+.company-info td {
+    padding: var(--padding);
+    border-bottom: 1px solid var(--tile-border-color); /* Minimal line between rows */
+}
+
+.company-info td:first-child {
+    font-weight: bold;
+    width: var(--wide-attribute-column-width);
+}
+
+.investment-signal-label {
+    background-color: var(--signal-bg-color);
+    font-weight: bold;
+}
+
+.investment-signal-cell {
+    background-color: var(--signal-bg-color);
+    padding: var(--padding);
+}
+
+.company-financials {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: var(--padding);
+    flex-grow: 1; /* Ensure the table grows to fill the tile */
+    height: 100%; /* Ensure the table takes full height */
+}
+
+.company-financials th, .company-financials td {
+    padding: var(--padding);
+    border-bottom: 1px solid var(--tile-border-color); /* Minimal line between rows */
+    text-align: left;
+    font-weight: normal; /* Ensure normal font weight */
+    font-size: var(--tile-font-size); /* Ensure unified font size */
+}
+
+.company-financials th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.company-financials td:first-child {
+    font-weight: bold;
+    width: var(--wide-attribute-column-width);
+}
+
+.inner-financial-info {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: var(--padding-large);
+}
+
+.inner-financial-info th, .inner-financial-info td {
+    padding: var(--padding);
+    border-bottom: 1px solid var(--tile-border-color); /* Minimal line between rows */
+    text-align: left;
+    font-weight: normal; /* Ensure normal font weight */
+    font-size: var(--tile-font-size); /* Ensure unified font size */
+    width: calc(100% / 3); /* Equally distribute the width of year columns */
+}
+
+.inner-financial-info th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.valuation-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: var(--padding-large);
+}
+
+.valuation-table th, .valuation-table td {
+    padding: var(--padding);
+    border-bottom: 1px solid var(--tile-border-color); /* Minimal line between rows */
+    text-align: left;
+    font-weight: normal; /* Ensure normal font weight */
+    font-size: var(--tile-font-size); /* Ensure unified font size */
+    border-bottom: 1px solid var(--tile-border-color); /* Add horizontal lines */
+}
+
+.valuation-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.valuation-tools {
+    margin-top: var(--padding-large);
+}
+
+.valuation-tools label {
+    display: block;
+    margin-bottom: var(--padding);
+    font-weight: bold;
+}
+
+.valuation-tools select {
+    padding: var(--padding);
+    font-size: 16px;
+    border: 1px solid var(--input-border-color);
+    border-radius: var(--border-radius);
+    width: 100%;
+}
+
+.valuation-tools button {
+    padding: var(--padding);
+    font-size: 16px;
+    background-color: var(--primary-bg-color);
+    color: var(--primary-text-color);
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    margin-top: var(--padding);
+}
+
+.valuation-tools button:hover {
+    background-color: var(--hover-bg-color);
+}
+
+.valuation-result {
+    margin-top: var(--padding-large);
+    background-color: #f9f9f9;
+    padding: var(--padding-large);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--tile-border-color);
+}
+
+.comparison-tiles {
+    display: flex;
+    gap: var(--gap);
+    margin-top: var(--padding-large);
+}
+
+.company-tile {
+    flex: 1;
+    border: 1px solid var(--tile-border-color);
+    border-radius: var(--border-radius);
+    padding: var(--padding-large);
+    background-color: var(--highlight-bg-color);
+    margin-top: var(--padding-large); /* Added margin-top to ensure enough space */
+}
+
+.company-tile h2 {
+    font-size: var(--header-font-size);
+    margin-top: 0;
+}
+
+.company-tile table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.company-tile td {
+    padding: var(--padding);
+    border-bottom: 1px solid var(--tile-border-color);
+}
+
+.company-tile td:first-child {
+    font-weight: bold;
+    width: var(--wide-attribute-column-width);
+}
+
+.company-tile button {
+    margin-top: var(--padding);
+    padding: var(--padding);
+    font-size: var(--tile-font-size);
+    background-color: var(--primary-bg-color);
+    color: var(--primary-text-color);
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+}
+
+.company-tile button:hover {
+    background-color: var(--hover-bg-color);
+}
+
+/* Exploration Opportunities Styles */
+.filters {
+    display: flex;
+    gap: var(--gap);
+    margin-bottom: var(--padding-large);
+}
+
+.filters label {
+    font-weight: bold;
+}
+
+.filters select {
+    padding: var(--padding);
+    font-size: 16px;
+    border: 1px solid var(--input-border-color);
+    border-radius: var(--border-radius);
+}
+
+.filters button {
+    padding: var(--padding);
+    font-size: 16px;
+    background-color: var(--primary-bg-color);
+    color: var(--primary-text-color);
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+}
+
+.filters button:hover {
+    background-color: var(--hover-bg-color);
+}
+
+.search-results table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.search-results th, .search-results td {
+    border: 1px solid var(--tile-border-color);
+    padding: var(--padding);
+    text-align: left;
+}
+
+.search-results th {
+    background-color: #f2f2f2;
+}
+
+.company-info-container {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--gap);
+    align-items: stretch; /* Ensure both tables have the same height */
+}
+
+.company-profile, .company-financials {
+    width: 48%;
+}
+
+.company-profile table, .company-financials table {
+    width: 100%;
+    height: 100%; /* Ensure the table takes full height */
+}
+
+.company-profile td, .company-financials td {
+    padding: var(--padding);
+    vertical-align: top;
+}
+
+/* Styles for search suggestions */
+.suggestions-box {
+    position: absolute;
+    border: 1px solid var(--tile-border-color);
+    background-color: var(--tile-bg-color);
+    max-height: 200px;
+    overflow-y: auto;
+    border-radius: var(--border-radius);
+    width: calc(100% - 110px); /* Adjust to match the input width */
+    z-index: 1000;
+}
+
+.suggestion-item {
+    padding: var(--padding);
+    cursor: pointer;
+}
+
+.suggestion-item:hover {
+    background-color: var(--highlight-bg-color);
+}
+
+/* Styles for the signal bar */
+.signal-bar {
+    width: 100%;
+    height: 30px;
+    background: linear-gradient(to right, red, white, green);
+    position: relative;
+    border-radius: var(--border-radius);
+    margin: var(--padding) 0;
+}
+
+.signal-indicator {
+    width: 10px;
+    height: 30px;
+    background: black;
+    position: absolute;
+    top: 0;
+    border-radius: var(--border-radius);
+}
+
+.signal-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: var(--padding);
+    font-size: 14px;
+}
+
+.signal-labels span {
+    color: #333;
+}
+
+/* Styles for the arrows */
+.arrow-up {
+    color: var(--arrow-up-color);
+    font-size: var(--tile-font-size); /* Ensure unified font size */
+    margin-left: 5px;
+}
+
+.arrow-down {
+    color: var(--arrow-down-color);
+    font-size: var(--tile-font-size); /* Ensure unified font size */
+    margin-left: 5px;
+}
+
+/* Card styles for comparison.html */
+.comparison-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--gap);
+    margin-top: var(--padding-large);
+    justify-content: flex-start; /* Left align cards */
+}
+
+.comparison-card {
+    background-color: var(--tile-bg-color);
+    border: 1px solid var(--tile-border-color);
+    border-radius: var(--border-radius);
+    padding: var(--padding-large);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 300px; /* Fixed width for cards */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-sizing: border-box;
+    margin: var(--padding) 0;
+}
+
+.comparison-card h3 {
+    font-size: var(--header-font-size);
+    margin-top: 0;
+    margin-bottom: var(--padding);
+    border-bottom: 1px solid var(--tile-border-color);
+}
+
+.card-content p {
+    margin: 5px 0;
+    padding: 5px 0;
+    border-bottom: 1px solid rgba(0, 0, 255, 0.1); /* Super thin transparent blue line */
+}
+
+.card-content p:last-child {
+    border-bottom: none; /* Remove the border from the last item */
+}
+
+.card-content {
+    background-color: rgba(0, 0, 255, 0.02); /* Super transparent blue background */
+    padding: var(--padding);
+    border-radius: var(--border-radius);
+}
+
+.card-buttons {
+    display: flex;
+    justify-content: space-between;
+    padding-top: var(--padding);
+}
+
+.card-buttons button {
+    background: none;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.card-buttons button:hover {
+    color: var(--hover-bg-color);
+}
+
+/* Styles for drag-and-drop */
+.sortable-ghost {
+    opacity: 0.4;
+    background-color: var(--highlight-bg-color);
+}
+
+@media (max-width: 768px) {
+    .comparison-card {
+        width: calc(50% - var(--gap));
+    }
+}
+
+@media (max-width: 480px) {
+    .comparison-card {
+        width: calc(100% - var(--gap));
+    }
+}
+
+/* General navigation styles */
+nav {
+    display: flex;
+    align-items: center;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    margin: 0;
+    padding: 0;
+}
+
+nav ul li {
+    margin-right: 20px;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: var(--primary-text-color);
+}
+
+nav ul li a.active {
+    color: var(--active-link-color);
+}
+
+/* Currency Toggle Switch */
+.currency-toggle {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+}
+
+.currency-toggle span {
+    margin: 0 10px;
+    font-weight: bold;
+    color: #ccc; /* Default color */
+    transition: color 0.4s;
+}
+
+.currency-toggle span.active {
+    color: #2196F3; /* Active color */
+}
+
+.currency-toggle .switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 20px;
+}
+
+.currency-toggle .switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.currency-toggle .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.currency-toggle .slider:before {
+    position: absolute;
+    content: "";
+    height: 14px;
+    width: 14px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+.currency-toggle input:checked + .slider {
+    background-color: #2196F3;
+}
+
+.currency-toggle input:checked + .slider:before {
+    transform: translateX(20px);
+}
+
+/* Rounded sliders */
+.currency-toggle .slider.round {
+    border-radius: 34px;
+}
+
+.currency-toggle .slider.round:before {
+    border-radius: 50%;
+}
+/* Add styles to ensure suggestions are properly displayed */
+.suggestions {
+    border: 1px solid #ccc;
+    max-height: 200px;
+    overflow-y: auto;
+    background-color: #fff;
+    display: none; /* Initially hidden */
+    position: absolute;
+    z-index: 1000;
+}
+
+.suggestion-item {
+    padding: 10px;
+    cursor: pointer;
+}
+
+.suggestion-item:hover {
+    background-color: #f0f0f0;
+}
+
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#price-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 0 0 30%; /* Fixed width to 30% */
+    margin-right: var(--padding-large);
+    flex-shrink: 0; /* Prevent the price info from shrinking */
+}
+
+.price-label {
+    background-color: #2c3e50;
+    color: #fff;
+    padding: var(--padding);
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
+    font-size: 24px; /* Increased font size */
+    font-weight: bold;
+    width: 100%; /* Full width */
+    text-align: center;
+}
+
+#price-box {
+    background-color: #27ae60;
+    border-radius: 0 0 var(--border-radius) var(--border-radius);
+    padding: var(--padding-large);
+    text-align: center;
+    width: 100%; /* Full width */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add a subtle shadow for a professional look */
+}
+
+#price-box .price {
+    font-size: 60px; /* Larger font size for the price */
+    font-weight: bold;
+    color: #fff; /* White color for the price text */
+    margin-bottom: 10px;
+}
+
+#price-chart {
+    flex: 0 0 70%; /* Fixed width to 70% */
+    min-width: 0; /* Prevent overflow */
+}
+
+/* Additional CSS for overall styling */
+.tile {
+    display: flex;
+    flex-direction: column;
+    padding: var(--padding-large);
+    margin-bottom: var(--padding-large);
+    border-radius: var(--border-radius);
+    background-color: var(--tile-bg-color);
+    border: 1px solid var(--tile-border-color);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add shadow for professional look */
+}
+
+.tile h2 {
+    font-size: var(--header-font-size);
+    color: var(--primary-text-color);
+    margin-bottom: var(--padding);
+}
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 300px; /* Larger width for the tooltip box */
+    background-color: #FFD700; /* Mustard yellow color */
+    color: #333; /* Darker text color for contrast */
+    text-align: center;
+    border-radius: 5px;
+    padding: 10px; /* Increased padding for a larger box */
+    position: absolute;
+    z-index: 1;
+    bottom: 150%; /* Position above the text */
+    left: 50%;
+    margin-left: -150px; /* Adjusted to center the tooltip */
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-weight: normal; /* Non-bold font */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle box shadow for a professional look */
+    font-family: var(--font-family); /* Use the same font family */
+}
+
+.tooltip .tooltiptext::after {
+    content: "";
+    position: absolute;
+    top: 100%; /* Arrow at the bottom of the tooltip */
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #FFD700 transparent transparent transparent; /* Mustard yellow arrow */
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}
+
+.no-data {
+    color: #FFD700; /* Mustard yellow color */
+    font-style: italic; /* Italic font style */
+    font-weight: normal; /* Non-bold font */
+    display: inline-block;
+    padding: 5px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle box shadow for a professional look */
+}

@@ -1,0 +1,198 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="tile" id="tile1">
+    <!-- Search Bar for Finding Companies or Assets -->
+    <div class="search-bar">
+        <input type="text" id="screening-search" placeholder="Search for a company or asset...">
+        <button onclick="searchScreening()">Search</button>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters">
+        <label for="country-filter">Country:</label>
+        <select id="country-filter" onchange="applyFilters()">
+            <option value="">All</option>
+            <option value="Australia">Australia</option>
+            <option value="Canada">Canada</option>
+            <option value="USA">USA</option>
+        </select>
+        
+        <label for="grade-filter">Grade:</label>
+        <select id="grade-filter" onchange="applyFilters()">
+            <option value="">All</option>
+            <option value="High">High</option>
+            <option value="Medium">Medium</option>
+            <option value="Low">Low</option>
+        </select>
+        
+        <label for="reserve-filter">Reserve Size:</label>
+        <select id="reserve-filter" onchange="applyFilters()">
+            <option value="">All</option>
+            <option value="Large">Large</option>
+            <option value="Medium">Medium</option>
+            <option value="Small">Small</option>
+        </select>
+        
+        <label for="market-cap-filter">Market Cap:</label>
+        <select id="market-cap-filter" onchange="applyFilters()">
+            <option value="">All</option>
+            <option value=">100B">&gt; $100B</option>
+            <option value="10B-100B">$10B - $100B</option>
+            <option value="<10B">&lt; $10B</option>
+        </select>
+
+        <label for="valuation-method">Valuation Method:</label>
+        <select id="valuation-method" onchange="applyFilters()">
+            <option value="">All</option>
+            <option value="Book Value">Book Value</option>
+            <option value="Enterprise Value">Enterprise Value</option>
+            <option value="EV/EBITDA">EV/EBITDA</option>
+            <option value="Multiples">Multiples</option>
+        </select>
+    </div>
+
+    <!-- Search Results Table -->
+    <div class="search-results">
+        <div class="table-container">
+            <table id="results-table">
+                <thead>
+                    <tr>
+                        <th>Company Name</th>
+                        <th>Last Price</th>
+                        <th>NYSE</th>
+                        <th>Last Delayed</th>
+                        <th>VWAP Delayed</th>
+                        <th>Open</th>
+                        <th>Previous Close</th>
+                        <th>Day High/Low</th>
+                        <th>52 Week High/Low</th>
+                        <th>Beta 3Y</th>
+                        <th>Market Cap (M$)</th>
+                        <th>P/LTM EPS (Ranked)</th>
+                        <th>P/NTM EPS (Ranked)</th>
+                        <th>Price/Book (Ranked)</th>
+                        <th>Price/Tang Book (Ranked)</th>
+                        <th>TEV/LTM Total Revenue (Ranked)</th>
+                        <th>TEV/LTM EBITDA (Ranked)</th>
+                        <th>Total Debt/EBITDA (Ranked)</th>
+                        <th>Average Rank</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for company in companies %}
+                    <tr>
+                        <td>{{ company['company_name'] }}</td>
+                        <td>{{ company['last_price'] }}</td>
+                        <td>{{ company['NYSE'] }}</td>
+                        <td>{{ company['last_delayed'] }}</td>
+                        <td>{{ company['VWAP_delayed'] }}</td>
+                        <td>{{ company['open'] }}</td>
+                        <td>{{ company['previous_close'] }}</td>
+                        <td>{{ company['day_high_low'] }}</td>
+                        <td>{{ company['52_week_high_low'] }}</td>
+                        <td>{{ company['beta_3y'] }}</td>
+                        <td>{{ company['market_cap_m_dollar'] }}</td>
+                        <td>{{ company['p/ltm_eps_(x)_ranked']|replace("(x)", "") }}</td>
+                        <td>{{ company['p/ntm_eps_(x)_ranked']|replace("(x)", "") }}</td>
+                        <td>{{ company['price/book_(x)_ranked']|replace("(x)", "") }}</td>
+                        <td>{{ company['price/tang_book_(x)_ranked']|replace("(x)", "") }}</td>
+                        <td>{{ company['tev/ltm_total_revenue_(x)_ranked']|replace("(x)", "") }}</td>
+                        <td>{{ company['tev/ltm_ebitda_(x)_ranked']|replace("(x)", "") }}</td>
+                        <td>{{ company['total_debt/ebitda_(x)_ranked']|replace("(x)", "") }}</td>
+                        <td>{{ company['average_Rank'] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+    .search-bar input, .search-bar button {
+        font-size: 14px;
+    }
+
+    .filters label, .filters select {
+        font-size: 14px;
+        margin-right: 10px;
+    }
+
+    .table-container {
+        overflow-x: auto; /* Make the table container scrollable */
+    }
+
+    .search-results table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px; /* Smaller font size */
+    }
+
+    .search-results th, .search-results td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+    }
+
+    .search-results th {
+        background-color: #f2f2f2; /* Light shading for header */
+        color: #333;
+    }
+
+    .search-results tr:nth-child(even) {
+        background-color: #f9f9f9; /* Alternating row colors */
+    }
+
+    .search-results tr:hover {
+        background-color: #ddd; /* Hover effect for rows */
+    }
+
+    .search-results th, .search-results td {
+        white-space: nowrap; /* Prevent text from wrapping */
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .filters {
+        margin-bottom: 20px;
+    }
+</style>
+
+<script>
+function searchScreening() {
+    var searchQuery = document.getElementById("screening-search").value;
+    // Placeholder for search functionality
+    alert("Search functionality is not yet implemented. You searched for: " + searchQuery);
+}
+
+function applyFilters() {
+    var country = document.getElementById("country-filter").value;
+    var grade = document.getElementById("grade-filter").value;
+    var reserve = document.getElementById("reserve-filter").value;
+    var marketCap = document.getElementById("market-cap-filter").value;
+    var valuationMethod = document.getElementById("valuation-method").value;
+
+    var table = document.getElementById("results-table").getElementsByTagName('tbody')[0];
+    var rows = table.getElementsByTagName('tr');
+
+    for (var i = 0; i < rows.length; i++) {
+        var countryCell = rows[i].getElementsByTagName('td')[2].innerText;
+        var gradeCell = rows[i].getElementsByTagName('td')[3].innerText;
+        var reserveCell = rows[i].getElementsByTagName('td')[4].innerText;
+        var marketCapCell = rows[i].getElementsByTagName('td')[5].innerText;
+
+        var countryMatch = (country === "" || countryCell === country);
+        var gradeMatch = (grade === "" || gradeCell === grade);
+        var reserveMatch = (reserve === "" || reserveCell === reserve);
+        var marketCapMatch = (marketCap === "" || marketCapCell === marketCap);
+
+        if (countryMatch && gradeMatch && reserveMatch && marketCapMatch) {
+            rows[i].style.display = "";
+        } else {
+            rows[i].style.display = "none";
+        }
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lithium AI Tool [demonstration purposes only]</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Lithium AI Tool</h1>
+        <h4> Demonstration Only - Analyst Input Required </h4>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('index') }}" class="{% if request.endpoint == 'index' %}active{% endif %}">Home</a></li>
+                <li><a href="{{ url_for('valuation') }}" class="{% if request.endpoint == 'valuation' %}active{% endif %}">Company Valuation</a></li>
+                <li><a href="{{ url_for('comparison') }}" class="{% if request.endpoint == 'comparison' %}active{% endif %}">Comparative Analysis</a></li>
+                <li><a href="{{ url_for('screening') }}" class="{% if request.endpoint == 'screening' %}active{% endif %}">Screening Tools</a></li>
+            </ul>
+            <div class="currency-toggle">
+                <span id="label-aud">AUD</span>
+                <label class="switch">
+                    <input type="checkbox" id="currency-toggle">
+                    <span class="slider round"></span>
+                </label>
+                <span id="label-usd">USD</span>
+            </div>
+        </nav>
+    </header>
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+    <script>
+        // Function to update the toggle state
+        function updateToggleState() {
+            var currencyToggle = document.getElementById('currency-toggle');
+            var audLabel = document.getElementById('label-aud');
+            var usdLabel = document.getElementById('label-usd');
+            if (currencyToggle.checked) {
+                audLabel.classList.remove('active');
+                usdLabel.classList.add('active');
+            } else {
+                audLabel.classList.add('active');
+                usdLabel.classList.remove('active');
+            }
+        }
+
+        // Load toggle state from local storage
+        window.onload = function() {
+            var currencyToggle = document.getElementById('currency-toggle');
+            var toggleState = localStorage.getItem('currency-toggle');
+            if (toggleState === 'usd') {
+                currencyToggle.checked = true;
+            } else {
+                currencyToggle.checked = false;
+            }
+            updateToggleState();
+        };
+
+        // Save toggle state to local storage
+        document.getElementById('currency-toggle').addEventListener('change', function() {
+            if (this.checked) {
+                localStorage.setItem('currency-toggle', 'usd');
+            } else {
+                localStorage.setItem('currency-toggle', 'aud');
+            }
+            updateToggleState();
+        });
+    </script>
+</body>
+</html>

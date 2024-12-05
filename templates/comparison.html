@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% block content %}
+<form id="search-form" class="search-bar" method="GET" action="{{ url_for('comparison') }}">
+    <input type="text" id="search" name="search" placeholder="Enter company name" autocomplete="off">
+    <button type="submit">Search</button>
+    <div id="suggestions" class="suggestions-box"></div>
+</form>
+{% if companies %}
+<div id="comparison-cards" class="comparison-cards">
+    {% for company in companies %}
+    <div class="comparison-card" data-company="{{ company.company_name }}">
+        <h3>{{ company.company_name }}</h3>
+        <div class="card-content">
+            <p><strong>Market Cap (M$):</strong> {{ company.market_cap_m_dollar }}</p>
+            <p><strong>Last Price:</strong> {{ company.last_price }}</p>
+            <p><strong>52 Week High/Low:</strong> {{ company._52_week_high_low }}</p>
+            <p><strong>Volume:</strong> {{ company.volume }}</p>
+            <p><strong>Float %:</strong> {{ company.float_ }}</p>
+            <p><strong>Institutional Ownership %:</strong> {{ company.inst_ownership_ }}</p>
+            <p><strong>Dividend Yield %:</strong> {{ company.div_yield_ }}</p>
+        </div>
+        <div class="card-buttons">
+            <button class="move-left" data-company="{{ company.company_name }}">&#9664;</button>
+            <button class="move-right" data-company="{{ company.company_name }}">&#9654;</button>
+            <button class="remove" data-company="{{ company.company_name }}">&times;</button>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<p>No companies found. Please try a different search term.</p>
+{% endif %}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.getElementById('search');
+    const searchForm = document.getElementById('search-form');
+    const suggestionsBox = document.getElementById('suggestions');
+    const comparisonCards = document.getElementById('comparison-cards');
+
+    // Listen for the Enter key press
+    searchInput.addEventListener('keypress', (event) => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            searchForm.submit();
+        }
+    });
+
+    searchInput.addEventListener('input', () => {
+        const query = searchInput.value;
+        if (query.length > 0) {
+            fetch(`/search_suggestions?query=${query}`)
+                .then(response => response.json())
+                .then(data => {
+                    suggestionsBox.innerHTML = '';
+                    suggestionsBox.style.width = `${searchInput.offsetWidth}px`; // Set the width dynamically
+                    data.forEach(suggestion => {
+                        const suggestionItem = document.createElement('div');
+                        suggestionItem.classList.add('suggestion-item');
+                        suggestionItem.textContent = suggestion;
+                        suggestionItem.addEventListener('click', () => {
+                            searchInput.value = suggestion;
+                            suggestionsBox.innerHTML = '';
+                            searchForm.submit(); // Submit the form when a suggestion is clicked
+                        });
+                        suggestionsBox.appendChild(suggestionItem);
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+        } else {
+            suggestionsBox.innerHTML = '';
+        }
+    });
+
+    searchForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const searchTerm = searchInput.value.trim().toLowerCase();
+        const existingCards = document.querySelectorAll('.comparison-card');
+        let alreadyDisplayed = false;
+
+        existingCards.forEach(card => {
+            const companyName = card.getAttribute('data-company').trim().toLowerCase();
+            if (companyName === searchTerm) {
+                alreadyDisplayed = true;
+            }
+        });
+
+        if (alreadyDisplayed) {
+            alert('This company is already being displayed.');
+        } else {
+            fetch(`/comparison?search=${encodeURIComponent(searchTerm)}`)
+                .then(response => response.text())
+                .then(html => {
+                    comparisonCards.innerHTML = html;
+                })
+                .catch(error => console.error('Error:', error));
+        }
+    });
+
+    const moveLeftButtons = document.querySelectorAll('.move-left');
+    const moveRightButtons = document.querySelectorAll('.move-right');
+    const removeButtons = document.querySelectorAll('.remove');
+
+    moveLeftButtons.forEach(button => {
+        button.addEventListener('click', event => {
+            event.preventDefault();
+            const card = button.closest('.comparison-card');
+            const prevCard = card.previousElementSibling;
+            if (prevCard) {
+                card.parentNode.insertBefore(card, prevCard);
+            }
+        });
+    });
+
+    moveRightButtons.forEach(button => {
+        button.addEventListener('click', event => {
+            event.preventDefault();
+            const card = button.closest('.comparison-card');
+            const nextCard = card.nextElementSibling;
+            if (nextCard) {
+                card.parentNode.insertBefore(nextCard, card);
+            }
+        });
+    });
+
+    removeButtons.forEach(button => {
+        button.addEventListener('click', event => {
+            event.preventDefault();
+            const companyName = button.dataset.company;
+            const card = button.closest('.comparison-card');
+            fetch('/remove_company', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ company_name: companyName })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    card.remove();
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    });
+
+    // Initialize Sortable
+    Sortable.create(comparisonCards, {
+        animation: 150,
+        ghostClass: 'sortable-ghost'
+    });
+});
+</script>
+{% endblock %}

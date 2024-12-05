@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="tile" id="tile1">
+    <div class="container">
+        <div id="price-info">
+            <div class="price-label">Lithium Price as of {{ latest_date }}:</div>
+            <div id="price-box">
+                <div class="price">{{ latest_price }}</div>
+            </div>
+        </div>
+        <div id="price-chart">
+            {{ graph_html|safe }}
+        </div>
+    </div>
+</div>
+<footer>
+    All prices are captured from metals-api.com
+</footer>
+{% endblock %}

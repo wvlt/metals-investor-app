@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metals Investor App - Lithium Prices</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <div class="branding-band">
+        <div class="logo">Metals Investor App</div>
+        <div class="menu">
+            <a href="{{ url_for('index') }}">Home</a>
+            <a href="{{ url_for('valuation') }}">Company Valuation</a>
+            <a href="{{ url_for('comparison') }}">Comparative Analysis</a>
+            <a href="{{ url_for('exploration') }}">Exploration Opportunities</a>
+        </div>
+    </div>
+    <div class="main-body">
+        <div class="title-bar">
+            <div class="page-title">Lithium Prices Over Time</div>
+            <div class="page-subtitle">Tracking the historical prices of Lithium and Lithium-Carbonate</div>
+        </div>
+        <div class="tile" id="tile1">
+            <div class="gauge-container">
+                <div class="title-container">
+                    <div class="plain-title">Price Trends</div>
+                </div>
+                {{ graph_html|safe }}
+            </div>
+        </div>
+    </div>
+</body>
+</html>

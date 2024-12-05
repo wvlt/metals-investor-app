@@ -1,0 +1,130 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<h1>Search Company Information</h1>
+<form method="POST" autocomplete="off">
+    <div class="autocomplete" style="width:300px;">
+        <input id="company_name" type="text" name="company_name" placeholder="Enter company name" required>
+    </div>
+    <input type="submit">
+</form>
+
+{% if company_info is not none %}
+    <h2>Company Information</h2>
+    <table>
+        <tr>
+            <th>Company Name</th>
+            <th>CEO</th>
+            <th>CFO and VP Finance</th>
+            <th>NYSE</th>
+            <th>Company Description</th>
+            <th>Headquarters</th>
+            <th>Status</th>
+            <th>Topic Tags</th>
+            <th>Date of Incorporation</th>
+            <th>Web Address</th>
+        </tr>
+        {% for row in company_info.itertuples() %}
+        <tr>
+            <td>{{ row.company_name }}</td>
+            <td>{{ row.ceo }}</td>
+            <td>{{ row.cfo_and_vp_finance }}</td>
+            <td>{{ row.NYSE }}</td>
+            <td>{{ row.company_description }}</td>
+            <td>{{ row.headquarters }}</td>
+            <td>{{ row.status }}</td>
+            <td>{{ row.topic_tags }}</td>
+            <td>{{ row.date_of_incorporation }}</td>
+            <td><a href="{{ row.web_address }}" target="_blank">{{ row.web_address }}</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endif %}
+{% endblock %}
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+function autocomplete(inp, arr) {
+    var currentFocus;
+    inp.addEventListener("input", function(e) {
+        var a, b, i, val = this.value;
+        closeAllLists();
+        if (!val) { return false;}
+        currentFocus = -1;
+        a = document.createElement("DIV");
+        a.setAttribute("id", this.id + "autocomplete-list");
+        a.setAttribute("class", "autocomplete-items");
+        this.parentNode.appendChild(a);
+        for (i = 0; i < arr.length; i++) {
+            if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
+                b = document.createElement("DIV");
+                b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
+                b.innerHTML += arr[i].substr(val.length);
+                b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
+                b.addEventListener("click", function(e) {
+                    inp.value = this.getElementsByTagName("input")[0].value;
+                    closeAllLists();
+                });
+                a.appendChild(b);
+            }
+        }
+    });
+    inp.addEventListener("keydown", function(e) {
+        var x = document.getElementById(this.id + "autocomplete-list");
+        if (x) x = x.getElementsByTagName("div");
+        if (e.keyCode == 40) {
+            currentFocus++;
+            addActive(x);
+        } else if (e.keyCode == 38) {
+            currentFocus--;
+            addActive(x);
+        } else if (e.keyCode == 13) {
+            e.preventDefault();
+            if (currentFocus > -1) {
+                if (x) x[currentFocus].click();
+            }
+        }
+    });
+    function addActive(x) {
+        if (!x) return false;
+        removeActive(x);
+        if (currentFocus >= x.length) currentFocus = 0;
+        if (currentFocus < 0) currentFocus = (x.length - 1);
+        x[currentFocus].classList.add("autocomplete-active");
+    }
+    function removeActive(x) {
+        for (var i = 0; i < x.length; i++) {
+            x[i].classList.remove("autocomplete-active");
+        }
+    }
+    function closeAllLists(elmnt) {
+        var x = document.getElementsByClassName("autocomplete-items");
+        for (var i = 0; i < x.length; i++) {
+            if (elmnt != x[i] && elmnt != inp) {
+                x[i].parentNode.removeChild(x[i]);
+            }
+        }
+    }
+    document.addEventListener("click", function (e) {
+        closeAllLists(e.target);
+    });
+}
+
+$(document).ready(function() {
+    $('#company_name').on('input', function() {
+        let query = $(this).val();
+        if (query.length > 2) {
+            $.ajax({
+                url: '/search_suggestions',
+                method: 'GET',
+                data: { query: query },
+                success: function(data) {
+                    autocomplete(document.getElementById("company_name"), data);
+                }
+            });
+        }
+    });
+});
+</script>
+
+

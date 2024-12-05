@@ -1,0 +1,415 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="search-bar">
+    <form method="POST" action="{{ url_for('valuation') }}">
+        <input type="text" name="company_name" id="company_name" placeholder="Enter company name" required autocomplete="off" oninput="searchCompanies()">
+        <div id="suggestions" class="suggestions"></div>
+        <button type="submit">Search</button>
+    </form>
+</div>
+
+{% if company_info %}
+    <div class="company-info-container">
+        <div class="company-profile tile">
+            <h2>Corporate Data</h2>
+            <table class="company-info">
+                <tr>
+                    <td>Company Name</td>
+                    <td>{{ company_info[0]['company_name'] }}</td>
+                </tr>
+                <tr>
+                    <td>CEO</td>
+                    <td>{{ company_info[0]['ceo'] }}</td>
+                </tr>
+                <tr>
+                    <td>CFO and VP Finance</td>
+                    <td>{{ company_info[0]['cfo_and_vp_finance'] }}</td>
+                </tr>
+                <tr>
+                    <td>NYSE</td>
+                    <td>{{ company_info[0]['NYSE'] }}</td>
+                </tr>
+                <tr>
+                    <td>Company Description</td>
+                    <td>{{ company_info[0]['company_description'] }}</td>
+                </tr>
+                <tr>
+                    <td>Headquarters</td>
+                    <td>{{ company_info[0]['headquarters'] }}</td>
+                </tr>
+                <tr>
+                    <td>Status</td>
+                    <td>{{ company_info[0]['status'] }}</td>
+                </tr>
+                <tr>
+                    <td>Topic Tags</td>
+                    <td>{{ company_info[0]['topic_tags'] }}</td>
+                </tr>
+                <tr>
+                    <td>Date of Incorporation</td>
+                    <td>{{ company_info[0]['date_of_incorporation'] }}</td>
+                </tr>
+                <tr>
+                    <td>Web Address</td>
+                    <td>
+                        <a href="{{ 'https://' + company_info[0]['web_address'] if not company_info[0]['web_address'].startswith('http') else company_info[0]['web_address'] }}" target="_blank">
+                            {{ company_info[0]['web_address'] }}
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="investment-signal-label tooltip">Investment Signal
+                        <span class="tooltiptext">Above 5% dividend yield is a buy signal, below 5% is a sell signal.</span>
+                    </td>
+                    <td class="investment-signal-cell">
+                        <div class="signal-bar">
+                            <div class="signal-indicator" style="left: {{ 5 * company_info[0]['div._yield_%'] }}%;"></div>
+                        </div>
+                        <div class="signal-labels">
+                            <span>Sell</span>
+                            <span>Neutral</span>
+                            <span>Buy</span>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        
+        <div class="company-financials tile">
+            <h2>Financial Highlights</h2>
+            <table class="financial-info">
+                <thead>
+                    <tr>
+                        <th>Attribute</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Market Cap (2024)</td>
+                        <td class="right-align">{{ company_info[0]['market_cap_m_dollar'] }}</td>
+                    </tr>
+                    <tr>
+                        <td>Share Price (2024)</td>
+                        <td class="right-align">{{ company_info[0]['last_price'] }}</td>
+                    </tr>
+                    <tr>
+                        <td>52 Week High/Low (2024)</td>
+                        <td class="right-align">{{ company_info[0]['52_week_high_low'] }}</td>
+                    </tr>
+                    <tr>
+                        <td>Volume</td>
+                        <td class="right-align">{{ company_info[0]['volume'] }}</td>
+                    </tr>
+                    <tr>
+                        <td>Float %</td>
+                        <td class="right-align">{{ company_info[0]['float_%'] }}</td>
+                    </tr>
+                    <tr>
+                        <td>Institutional Ownership %</td>
+                        <td class="right-align">{{ company_info[0]['inst._ownership_%'] }}</td>
+                    </tr>
+                    <tr>
+                        <td>Dividend Yield %</td>
+                        <td class="right-align">{{ company_info[0]['div._yield_%'] }}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <table class="inner-financial-info">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>2022</th>
+                                        <th>2023</th>
+                                        <th>2024</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Total Revenue</td>
+                                        <td class="right-align">{{ company_info[0]['total_revenue_$000_2022'] if company_info[0]['total_revenue_$000_2022'] != 'Data not available' else '<span class="no-data">Data not available</span>'|safe }}</td>
+                                        <td class="right-align">
+                                            {{ company_info[0]['total_revenue_$000_2023'] if company_info[0]['total_revenue_$000_2023'] != 'Data not available' else '<span class="no-data">Data not available</span>'|safe }}
+                                            {% set revenue_2022 = company_info[0]['total_revenue_$000_2022'] | float %}
+                                            {% set revenue_2023 = company_info[0]['total_revenue_$000_2023'] | float %}
+                                            {% if revenue_2022 != 0 %}
+                                                {% if revenue_2023 > revenue_2022 %}
+                                                    <span class="arrow-up">&#9650; {{ ((revenue_2023 - revenue_2022) / revenue_2022 * 100) | round(1) | abs }}%</span>
+                                                {% elif revenue_2023 < revenue_2022 %}
+                                                    <span class="arrow-down">&#9660; {{ ((revenue_2023 - revenue_2022) / revenue_2022 * 100) | round(1) | abs }}%</span>
+                                                {% endif %}
+                                            {% endif %}
+                                        </td>
+                                        <td class="right-align">
+                                            {{ company_info[0]['total_revenue_$000_2024'] if company_info[0]['total_revenue_$000_2024'] != 'Data not available' else '<span class="no-data">Data not available</span>'|safe }}
+                                            {% set revenue_2024 = company_info[0]['total_revenue_$000_2024'] | float %}
+                                            {% if revenue_2023 != 0 %}
+                                                {% if revenue_2024 > revenue_2023 %}
+                                                    <span class="arrow-up">&#9650; {{ ((revenue_2024 - revenue_2023) / revenue_2023 * 100) | round(1) | abs }}%</span>
+                                                {% elif revenue_2024 < revenue_2023 %}
+                                                    <span class="arrow-down">&#9660; {{ ((revenue_2024 - revenue_2023) / revenue_2023 * 100) | round(1) | abs }}%</span>
+                                                {% endif %}
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Total Assets</td>
+                                        <td class="right-align">{{ company_info[0]['total_assets_$000_2022'] if company_info[0]['total_assets_$000_2022'] != 'Data not available' else '<span class="no-data">Data not available</span>'|safe }}</td>
+                                        <td class="right-align">
+                                            {{ company_info[0]['total_assets_$000_2023'] if company_info[0]['total_assets_$000_2023'] != 'Data not available' else '<span class="no-data">Data not available</span>'|safe }}
+                                            {% set assets_2022 = company_info[0]['total_assets_$000_2022'] | float %}
+                                            {% set assets_2023 = company_info[0]['total_assets_$000_2023'] | float %}
+                                            {% if assets_2022 != 0 %}
+                                                {% if assets_2023 > assets_2022 %}
+                                                    <span class="arrow-up">&#9650; {{ ((assets_2023 - assets_2022) / assets_2022 * 100) | round(1) | abs }}%</span>
+                                                {% elif assets_2023 < assets_2022 %}
+                                                    <span class="arrow-down">&#9660; {{ ((assets_2023 - assets_2022) / assets_2022 * 100) | round(1) | abs }}%</span>
+                                                {% endif %}
+                                            {% endif %}
+                                        </td>
+                                        <td class="right-align">
+                                            {{ company_info[0]['total_assets_$000_2024'] if company_info[0]['total_assets_$000_2024'] != 'Data not available' else '<span class="no-data">Data not available</span>'|safe }}
+                                            {% set assets_2024 = company_info[0]['total_assets_$000_2024'] | float %}
+                                            {% if assets_2023 != 0 %}
+                                                {% if assets_2024 > assets_2023 %}
+                                                    <span class="arrow-up">&#9650; {{ ((assets_2024 - assets_2023) / assets_2023 * 100) | round(1) | abs }}%</span>
+                                                {% elif assets_2024 < assets_2023 %}
+                                                    <span class="arrow-down">&#9660; {{ ((assets_2024 - assets_2023) / assets_2023 * 100) | round(1) | abs }}%</span>
+                                                {% endif %}
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Total Liabilities</td>
+                                        <td class="right-align">{{ company_info[0]['total_liabilities_$000_2022'] if company_info[0]['total_liabilities_$000_2022'] != 'Data not available' else '<span class="no-data">Data not available</span>'|safe }}</td>
+                                        <td class="right-align">
+                                            {{ company_info[0]['total_liabilities_$000_2023'] if company_info[0]['total_liabilities_$000_2023'] != 'Data not available' else '<span class="no-data">Data not available</span>'|safe }}
+                                            {% set liabilities_2022 = company_info[0]['total_liabilities_$000_2022'] | float %}
+                                            {% set liabilities_2023 = company_info[0]['total_liabilities_$000_2023'] | float %}
+                                            {% if liabilities_2022 != 0 %}
+                                                {% if liabilities_2023 > liabilities_2022 %}
+                                                    <span class="arrow-up">&#9650; {{ ((liabilities_2023 - liabilities_2022) / liabilities_2022 * 100) | round(1) | abs }}%</span>
+                                                {% elif liabilities_2023 < liabilities_2022 %}
+                                                    <span class="arrow-down">&#9660; {{ ((liabilities_2023 - liabilities_2022) / liabilities_2022 * 100) | round(1) | abs }}%</span>
+                                                {% endif %}
+                                            {% endif %}
+                                        </td>
+                                        <td class="right-align">
+                                            {{ company_info[0]['total_liabilities_$000_2024'] if company_info[0]['total_liabilities_$000_2024'] != 'Data not available' else '<span class="no-data">Data not available</span>'|safe }}
+                                            {% set liabilities_2024 = company_info[0]['total_liabilities_$000_2024'] | float %}
+                                            {% if liabilities_2023 != 0 %}
+                                                {% if liabilities_2024 > liabilities_2023 %}
+                                                    <span class="arrow-up">&#9650; {{ ((liabilities_2024 - liabilities_2023) / liabilities_2023 * 100) | round(1) | abs }}%</span>
+                                                {% elif liabilities_2024 < liabilities_2023 %}
+                                                    <span class="arrow-down">&#9660; {{ ((liabilities_2024 - liabilities_2023) / liabilities_2023 * 100) | round(1) | abs }}%</span>
+                                                {% endif %}
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Total Equity</td>
+                                        <td class="right-align">{{ company_info[0]['total_equity_$000_2022'] if company_info[0]['total_equity_$000_2022'] != 'Data not available' else '<span class="no-data">Data not available</span>'|safe }}</td>
+                                        <td class="right-align">
+                                            {{ company_info[0]['total_equity_$000_2023'] if company_info[0]['total_equity_$000_2023'] != 'Data not available' else '<span class="no-data">Data not available</span>'|safe }}
+                                            {% set equity_2022 = company_info[0]['total_equity_$000_2022'] | float %}
+                                            {% set equity_2023 = company_info[0]['total_equity_$000_2023'] | float %}
+                                            {% if equity_2022 != 0 %}
+                                                {% if equity_2023 > equity_2022 %}
+                                                    <span class="arrow-up">&#9650; {{ ((equity_2023 - equity_2022) / equity_2022 * 100) | round(1) | abs }}%</span>
+                                                {% elif equity_2023 < equity_2022 %}
+                                                    <span class="arrow-down">&#9660; {{ ((equity_2023 - equity_2022) / equity_2022 * 100) | round(1) | abs }}%</span>
+                                                {% endif %}
+                                            {% endif %}
+                                        </td>
+                                        <td class="right-align">
+                                            {{ company_info[0]['total_equity_$000_2024'] if company_info[0]['total_equity_$000_2024'] != 'Data not available' else '<span class="no-data">Data not available</span>'|safe }}
+                                            {% set equity_2024 = company_info[0]['total_equity_$000_2024'] | float %}
+                                            {% if equity_2023 != 0 %}
+                                                {% if equity_2024 > equity_2023 %}
+                                                    <span class="arrow-up">&#9650; {{ ((equity_2024 - equity_2023) / equity_2023 * 100) | round(1) | abs }}%</span>
+                                                {% elif equity_2024 < equity_2023 %}
+                                                    <span class="arrow-down">&#9660; {{ ((equity_2024 - equity_2023) / equity_2023 * 100) | round(1) | abs }}%</span>
+                                                {% endif %}
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Net Income</td>
+                                        <td class="right-align">{{ company_info[0]['net_income_$000_2022'] if company_info[0]['net_income_$000_2022'] != 'Data not available' else '<span class="no-data">Data not available</span>'|safe }}</td>
+                                        <td class="right-align">
+                                            {{ company_info[0]['net_income_$000_2023'] if company_info[0]['net_income_$000_2023'] != 'Data not available' else '<span class="no-data">Data not available</span>'|safe }}
+                                            {% set income_2022 = company_info[0]['net_income_$000_2022'] | float %}
+                                            {% set income_2023 = company_info[0]['net_income_$000_2023'] | float %}
+                                            {% if income_2022 != 0 %}
+                                                {% if income_2023 > income_2022 %}
+                                                    <span class="arrow-up">&#9650; {{ ((income_2023 - income_2022) / income_2022 * 100) | round(1) | abs }}%</span>
+                                                {% elif income_2023 < income_2022 %}
+                                                    <span class="arrow-down">&#9660; {{ ((income_2023 - income_2022) / income_2022 * 100) | round(1) | abs }}%</span>
+                                                {% endif %}
+                                            {% endif %}
+                                        </td>
+                                        <td class="right-align">
+                                            {{ company_info[0]['net_income_$000_2024'] if company_info[0]['net_income_$000_2024'] != 'Data not available' else '<span class="no-data">Data not available</span>'|safe }}
+                                            {% set income_2024 = company_info[0]['net_income_$000_2024'] | float %}
+                                            {% if income_2023 != 0 %}
+                                                {% if income_2024 > income_2023 %}
+                                                    <span class="arrow-up">&#9650; {{ ((income_2024 - income_2023) / income_2023 * 100) | round(1) | abs }}%</span>
+                                                {% elif income_2024 < income_2023 %}
+                                                    <span class="arrow-down">&#9660; {{ ((income_2024 - income_2023) / income_2023 * 100) | round(1) | abs }}%</span>
+                                                {% endif %}
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Net Debt</td>
+                                        <td class="right-align">{{ company_info[0]['net_debt_$000_2022'] if company_info[0]['net_debt_$000_2022'] != 'Data not available' else '<span class="no-data">Data not available</span>'|safe }}</td>
+                                        <td class="right-align">
+                                            {{ company_info[0]['net_debt_$000_2023'] if company_info[0]['net_debt_$000_2023'] != 'Data not available' else '<span class="no-data">Data not available</span>'|safe }}
+                                            {% set debt_2022 = company_info[0]['net_debt_$000_2022'] | float %}
+                                            {% set debt_2023 = company_info[0]['net_debt_$000_2023'] | float %}
+                                            {% if debt_2022 != 0 %}
+                                                {% if debt_2023 > debt_2022 %}
+                                                    <span class="arrow-up">&#9650; {{ ((debt_2023 - debt_2022) / debt_2022 * 100) | round(1) | abs }}%</span>
+                                                {% elif debt_2023 < debt_2022 %}
+                                                    <span class="arrow-down">&#9660; {{ ((debt_2023 - debt_2022) / debt_2022 * 100) | round(1) | abs }}%</span>
+                                                {% endif %}
+                                            {% endif %}
+                                        </td>
+                                        <td class="right-align">
+                                            {{ company_info[0]['net_debt_$000_2024'] if company_info[0]['net_debt_$000_2024'] != 'Data not available' else '<span class="no-data">Data not available</span>'|safe }}
+                                            {% set debt_2024 = company_info[0]['net_debt_$000_2024'] | float %}
+                                            {% if debt_2023 != 0 %}
+                                                {% if debt_2024 > debt_2023 %}
+                                                    <span class="arrow-up">&#9650; {{ ((debt_2024 - debt_2023) / debt_2023 * 100) | round(1) | abs }}%</span>
+                                                {% elif debt_2024 < debt_2023 %}
+                                                    <span class="arrow-down">&#9660; {{ ((debt_2024 - debt_2023) / debt_2023 * 100) | round(1) | abs }}%</span>
+                                                {% endif %}
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="valuation-metrics tile">
+        <h2>Valuation Metrics</h2>
+        <table class="valuation-table">
+            <thead>
+                <tr>
+                    <th>Metric</th>
+                    <th>2022</th>
+                    <th>2023</th>
+                    <th>2024</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Book Value per Share</td>
+                    <td class="right-align">{{ company_info[0]['book_value_per_share_$_2022'] if company_info[0]['book_value_per_share_$_2022'] != 'Data not available' else '<span class="no-data">Data not available</span>'|safe }}</td>
+                    <td class="right-align">
+                        {{ company_info[0]['book_value_per_share_$_2023'] if company_info[0]['book_value_per_share_$_2023'] != 'Data not available' else '<span class="no-data">Data not available</span>'|safe }}
+                        {% set book_value_2022 = company_info[0]['book_value_per_share_$_2022'] | float %}
+                        {% set book_value_2023 = company_info[0]['book_value_per_share_$_2023'] | float %}
+                        {% if book_value_2023 > book_value_2022 %}
+                            <span class="arrow-up">&#9650; {{ ((book_value_2023 - book_value_2022) / book_value_2022 * 100) | round(1) | abs }}%</span>
+                        {% elif book_value_2023 < book_value_2022 %}
+                            <span class="arrow-down">&#9660; {{ ((book_value_2023 - book_value_2022) / book_value_2022 * 100) | round(1) | abs }}%</span>
+                        {% endif %}
+                    </td>
+                    <td class="right-align">
+                        {{ company_info[0]['book_value_per_share_$_2024'] if company_info[0]['book_value_per_share_$_2024'] != 'Data not available' else '<span class="no-data">Data not available</span>'|safe }}
+                        {% set book_value_2024 = company_info[0]['book_value_per_share_$_2024'] | float %}
+                        {% if book_value_2024 > book_value_2023 %}
+                            <span class="arrow-up">&#9650; {{ ((book_value_2024 - book_value_2023) / book_value_2023 * 100) | round(1) | abs }}%</span>
+                        {% elif book_value_2024 < book_value_2023 %}
+                            <span class="arrow-down">&#9660; {{ ((book_value_2024 - book_value_2023) / book_value_2023 * 100) | round(1) | abs }}%</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>EBIT</td>
+                    <td class="right-align">{{ company_info[0]['EBIT_$000_2022'] if company_info[0]['EBIT_$000_2022'] != 'Data not available' else '<span class="no-data">Data not available</span>'|safe }}</td>
+                    <td class="right-align">
+                        {{ company_info[0]['EBIT_$000_2023'] if company_info[0]['EBIT_$000_2023'] != 'Data not available' else '<span class="no-data">Data not available</span>'|safe }}
+                        {% set EBIT_2022 = company_info[0]['EBIT_$000_2022'] | float %}
+                        {% set EBIT_2023 = company_info[0]['EBIT_$000_2023'] | float %}
+                        {% if EBIT_2023 > EBIT_2022 %}
+                            <span class="arrow-up">&#9650; {{ ((EBIT_2023 - EBIT_2022) / EBIT_2022 * 100) | round(1) | abs }}%</span>
+                        {% elif EBIT_2023 < EBIT_2022 %}
+                            <span class="arrow-down">&#9660; {{ ((EBIT_2023 - EBIT_2022) / EBIT_2022 * 100) | round(1) | abs }}%</span>
+                        {% endif %}
+                    </td>
+                    <td class="right-align">
+                        {{ company_info[0]['EBIT_$000_2024'] if company_info[0]['EBIT_$000_2024'] != 'Data not available' else '<span class="no-data">Data not available</span>'|safe }}
+                        {% set EBIT_2024 = company_info[0]['EBIT_$000_2024'] | float %}
+                        {% if EBIT_2024 > EBIT_2023 %}
+                            <span class="arrow-up">&#9650; {{ ((EBIT_2024 - EBIT_2023) / EBIT_2023 * 100) | round(1) | abs }}%</span>
+                        {% elif EBIT_2024 < EBIT_2023 %}
+                            <span class="arrow-down">&#9660; {{ ((EBIT_2024 - EBIT_2023) / EBIT_2023 * 100) | round(1) | abs }}%</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>EBITDA</td>
+                    <td class="right-align">{{ company_info[0]['EBITDA_$000_2022'] if company_info[0]['EBITDA_$000_2022'] != 'Data not available' else '<span class="no-data">Data not available</span>'|safe }}</td>
+                    <td class="right-align">
+                        {{ company_info[0]['EBITDA_$000_2023'] if company_info[0]['EBITDA_$000_2023'] != 'Data not available' else '<span class="no-data">Data not available</span>'|safe }}
+                        {% set EBITDA_2022 = company_info[0]['EBITDA_$000_2022'] | float %}
+                        {% set EBITDA_2023 = company_info[0]['EBITDA_$000_2023'] | float %}
+                        {% if EBITDA_2023 > EBITDA_2022 %}
+                            <span class="arrow-up">&#9650; {{ ((EBITDA_2023 - EBITDA_2022) / EBITDA_2022 * 100) | round(1) | abs }}%</span>
+                        {% elif EBITDA_2023 < EBITDA_2022 %}
+                            <span class="arrow-down">&#9660; {{ ((EBITDA_2023 - EBITDA_2022) / EBITDA_2022 * 100) | round(1) | abs }}%</span>
+                        {% endif %}
+                    </td>
+                    <td class="right-align">
+                        {{ company_info[0]['EBITDA_$000_2024'] if company_info[0]['EBITDA_$000_2024'] != 'Data not available' else '<span class="no-data">Data not available</span>'|safe }}
+                        {% set EBITDA_2024 = company_info[0]['EBITDA_$000_2024'] | float %}
+                        {% if EBITDA_2024 > EBITDA_2023 %}
+                            <span class="arrow-up">&#9650; {{ ((EBITDA_2024 - EBITDA_2023) / EBITDA_2023 * 100) | round(1) | abs }}%</span>
+                        {% elif EBITDA_2024 < EBITDA_2023 %}
+                            <span class="arrow-down">&#9660; {{ ((EBITDA_2024 - EBITDA_2023) / EBITDA_2023 * 100) | round(1) | abs }}%</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>EV/EBITDA</td>
+                    <td colspan="3" class="right-align">{{ company_info[0][' EV/EBITDA'] if company_info[0][' EV/EBITDA'] != 'Data not available' else '<span class="no-data">Data not available</span>'|safe }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <p>No company information available. Please search for a company.</p>
+{% endif %}
+{% endblock %}
+
+<script>
+function searchCompanies() {
+    const query = document.getElementById('company_name').value;
+    if (query.length > 1) {
+        fetch(`/search_company?query=${query}`)
+            .then(response => response.json())
+            .then(data => {
+                let suggestions = '';
+                data.forEach(company => {
+                    suggestions += `<div class="suggestion-item" onclick="selectCompany('${company.company_name}')">${company.company_name}</div>`;
+                });
+                document.getElementById('suggestions').innerHTML = suggestions;
+            });
+    } else {
+        document.getElementById('suggestions').innerHTML = '';
+    }
+}
+
+function selectCompany(name) {
+    document.getElementById('company_name').value = name;
+    document.getElementById('suggestions').innerHTML = '';
+}
+</script>
